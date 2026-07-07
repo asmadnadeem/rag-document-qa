@@ -1,4 +1,10 @@
+import os
+from dotenv import load_dotenv
+from google import genai
+load_dotenv()
+client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
 import pdfplumber
+import time
 
 with pdfplumber.open('test.pdf') as pdf:
     text = ""
@@ -13,8 +19,10 @@ def chunk_text(text, chunk_size=500, overlap=10):
         start+=chunk_size-overlap
     return chunks
 
-result = chunk_text(text)
+chunks = chunk_text(text)
 
-print(len(result))
-print(result[0])
-print(result[1])
+embedded_chunks = []
+for chunk in chunks:
+    result = client.models.embed_content(model='gemini-embedding-001', contents=chunk)
+    embedded_chunks.append({'text': chunk, 'embedding': result.embeddings[0].values})
+    time.sleep(1)
