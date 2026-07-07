@@ -1,4 +1,5 @@
 import os
+import chromadb
 from dotenv import load_dotenv
 from google import genai
 load_dotenv()
@@ -26,3 +27,15 @@ for chunk in chunks:
     result = client.models.embed_content(model='gemini-embedding-001', contents=chunk)
     embedded_chunks.append({'text': chunk, 'embedding': result.embeddings[0].values})
     time.sleep(1)
+
+chroma_client = chromadb.Client()
+collection = chroma_client.create_collection('my_docs')
+
+for i, item in enumerate(embedded_chunks):
+    collection.add(documents=[item['text']], embeddings=[item['embedding']], ids=[f'chunk_{i}'])
+
+question = 'what is the title?'
+q_result = client.models.embed_content(model='gemini-embedding-001', contents=question)
+q_embedding = q_result.embeddings[0].values
+results = collection.query(query_embeddings=[q_embedding], n_results=3)
+print(results['documents'])
