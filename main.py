@@ -34,8 +34,12 @@ collection = chroma_client.create_collection('my_docs')
 for i, item in enumerate(embedded_chunks):
     collection.add(documents=[item['text']], embeddings=[item['embedding']], ids=[f'chunk_{i}'])
 
-question = 'what is the title?'
+question = 'what year was the research conducted?'
 q_result = client.models.embed_content(model='gemini-embedding-001', contents=question)
 q_embedding = q_result.embeddings[0].values
 results = collection.query(query_embeddings=[q_embedding], n_results=3)
-print(results['documents'])
+
+context = '\n\n'.join(results['documents'][0])
+prompt = f'Answer the question using ONLY this context. Say which part you used.\n\nContext:\n{context}\n\nQuestion: {question}'
+response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
+print(response.text)

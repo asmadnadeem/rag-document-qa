@@ -1,63 +1,80 @@
-# 📄 PDF Text Extraction (RAG Foundation Project)
+# RAG Document Intelligence — Core Pipeline
 
-## 🚀 Overview
-This project is a simple Python-based tool that extracts text from PDF files.  
-It is the first step toward building a Retrieval-Augmented Generation (RAG) system.
-
-The script reads a PDF file and prints its text content page by page.
+A retrieval-augmented generation pipeline built from scratch in Python. Upload any PDF, ask a question in natural language, and get a cited answer drawn directly from the document — no hallucination, no guesswork.
 
 ---
 
-## ⚙️ Features
-- Load and read PDF files
-- Extract text from each page
-- Print extracted text in terminal
+## What it does
+
+1. Extracts and cleans text from any PDF
+2. Splits the document into overlapping chunks for semantic precision
+3. Generates vector embeddings for each chunk via Google Gemini API
+4. Stores embeddings in ChromaDB for fast similarity search
+5. Embeds the user's question and retrieves the most relevant chunks
+6. Sends retrieved context + question to Gemini and returns a cited answer
+
+This is the foundation layer of a production RAG system — built without LangChain abstractions to ensure full understanding of the internals.
 
 ---
 
-## 🧠 Why this project?
-This project is built as a foundation for RAG systems, where the first step is:
-> Converting documents into machine-readable text
+## Tech Stack
+
+| Layer | Tool |
+|-------|------|
+| PDF Extraction | pdfplumber |
+| Text Chunking | Custom Python (chunk_size=500, overlap=10) |
+| Embeddings | Google Gemini API (gemini-embedding-001) |
+| Vector Storage | ChromaDB |
+| Answer Generation | Google Gemini (gemini-2.5-flash) |
+| Environment | python-dotenv |
 
 ---
 
-## 🛠️ Tech Stack
-- Python
-- pdfplumber
+## Project Structure
 
----
-
-## 📂 Project Structure
+```
 rag-project/
-│── main.py
-│── test.pdf
-│── README.md
-│── .gitignore
+├── main.py          # Full RAG pipeline
+├── .env             # API keys (not committed)
+├── .gitignore
+├── requirements.txt
+└── README.md
+```
 
 ---
 
-## ▶️ How to Run
+## How to Run
 
-1. Activate virtual environment  
-2. Install dependency:
-   - pdfplumber  
-3. Run script:
-   - python main.py
+```bash
+# 1. Clone the repo and activate virtual environment
+python -m venv venv
+venv\Scripts\activate  # Windows
 
----
+# 2. Install dependencies
+pip install pdfplumber google-genai python-dotenv chromadb
 
-## 📌 Output
-The script prints extracted text from each page of the PDF in the terminal.
+# 3. Add your Gemini API key to .env
+GEMINI_API_KEY=your_key_here
 
----
+# 4. Drop your PDF into the project folder and rename it test.pdf
 
-## 🔮 Next Steps
-- Split text into chunks
-- Generate embeddings
-- Store in vector database
-- Build full RAG chatbot
+# 5. Run
+python main.py
+```
 
 ---
 
-## 👨‍💻 Author
-Created as a learning project for AI + RAG development.
+## Architecture
+
+```
+PDF → Text Extraction → Chunking → Embedding → ChromaDB
+                                                    ↓
+Answer ← Gemini Generation ← Context Assembly ← Retrieval ← Question Embedding
+```
+
+---
+
+## Author
+
+**Asmad Nadeem** · BSCS @ FAST-NUCES CFD  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://linkedin.com/in/asmadnadeem)
