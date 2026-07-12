@@ -9,6 +9,10 @@ engine = create_engine(os.getenv('DATABASE_URL'))
 @app.post("/upload")
 async def upload_pdf(file: UploadFile):
     contents = await file.read()
+    with engine.connect() as conn:
+        conn.execute(text("INSERT INTO documents (filename, file_size, status) VALUES (:filename, :file_size, :status)"),
+        {"filename": file.filename, "file_size": len(contents), "status": "uploaded"})
+        conn.commit()
     return {
         "filename": file.filename,
         "status": "received",
@@ -43,3 +47,4 @@ def create_tables():
         conn.commit()
 
 create_tables()
+
