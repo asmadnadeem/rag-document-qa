@@ -5,14 +5,21 @@ from fastapi import FastAPI, UploadFile
 app = FastAPI()
 from sqlalchemy import create_engine, text
 engine = create_engine(os.getenv('DATABASE_URL'))
+from rag_pipeline import process_pdf, answer_question
 
 @app.post("/upload")
 async def upload_pdf(file: UploadFile):
     contents = await file.read()
     with engine.connect() as conn:
-        conn.execute(text("INSERT INTO documents (filename, file_size, status) VALUES (:filename, :file_size, :status)"),
-        {"filename": file.filename, "file_size": len(contents), "status": "uploaded"})
+        result = conn.execute(
+        text("INSERT INTO documents (filename, file_size, status) VALUES (:filename, :file_size, :status) RETURNING id"),
+        {"filename": file.filename, "file_size": len(contents), "status": "uploaded"}
+        )
+        document_id = result.fetchone()[0]
         conn.commit()
+
+    num_chunks = process_pdf(contents, document_id)
+
     return {
         "filename": file.filename,
         "status": "received",
@@ -20,9 +27,10 @@ async def upload_pdf(file: UploadFile):
         }
 
 @app.post('/query')
-async def ask_question(question: str):
+async def ask_question(question: str, document_id: int):
+    answer = answer_question(question, document_id)
     return {
-        'answer': 'placeholder — will connect RAG here'
+        'answer': answer
         }
 
 def create_tables():
