@@ -12,10 +12,13 @@ chroma_client = chromadb.PersistentClient(path='./chroma_db')
 collection = chroma_client.get_or_create_collection('my_docs')
 
 def process_pdf(file_bytes, document_id):
-    with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
-        text = ""
-        for page in pdf.pages:
-            text += page.extract_text()
+    try:
+        with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
+            text = ""
+            for page in pdf.pages:
+                text += page.extract_text()
+    except Exception:
+        return -1
     
     def chunk_text(text, chunk_size=500, overlap=10):
         chunks = []

@@ -27,6 +27,9 @@ async def upload_pdf(file: UploadFile):
 
     num_chunks = process_pdf(contents, document_id)
 
+    if num_chunks == -1:
+        raise HTTPException(status_code=400, detail="Could not process PDF — file may be corrupted")
+    
     if num_chunks == 0:
         raise HTTPException(status_code=400, detail="NO text detected on PDF")
     
