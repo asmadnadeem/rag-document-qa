@@ -33,7 +33,8 @@ async def upload_pdf(file: UploadFile):
     return {
         "filename": file.filename,
         "status": "received",
-        "size": len(contents)
+        "size": len(contents),
+        "document_id": document_id
         }
 
 @app.post('/query')
