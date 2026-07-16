@@ -55,9 +55,29 @@ def answer_question(question, document_id):
     )
     
     context = '\n\n'.join(results['documents'][0])
+
+    ans = check_groundedness(question, results['documents'][0])
     
-    prompt = f'Answer the question using ONLY this context. Say which part you used.\n\nContext:\n{context}\n\nQuestion: {question}'
+    if ans == True:
+        prompt = f'Answer the question using ONLY this context. Say which part you used.\n\nContext:\n{context}\n\nQuestion: {question}'
+        response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
+        return response.text
+    else:
+        return "This document does not contain enough information to answer this question."
+    
+
+def check_groundedness(question, chunks):
+    context = '\n\n'.join(chunks)
+    prompt = f'''Given this context, determine if there is enough information to answer the question.
+    
+    Context:
+    {context}
+
+    Question: {question}
+
+    Respond with ONLY "YES" if there is enough information, or "NO" if there is not enough information. Do not explain, just respond with YES or NO.'''
     
     response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
+    answer = response.text.strip().upper()
     
-    return response.text
+    return answer == "YES"
