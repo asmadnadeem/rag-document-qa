@@ -13,6 +13,7 @@ uploaded_file = st.file_uploader('Choose a PDF', type='pdf')
 
 if uploaded_file:
     if 'uploaded_filename' not in st.session_state or st.session_state.uploaded_filename != uploaded_file.name:
+        st.session_state.messages = []
         response = requests.post('http://localhost:8000/upload', files={'file': uploaded_file})
         result = response.json()
         st.session_state.uploaded_filename = uploaded_file.name

@@ -30,17 +30,20 @@ def process_pdf(file_bytes, document_id):
 
     chunks = chunk_text(text)
     
-    for i, chunk in enumerate(chunks):
-        result = client.models.embed_content(model='gemini-embedding-001', contents=chunk)
-        embedding = result.embeddings[0].values
-        
-        collection.add(
-            documents=[chunk],
-            embeddings=[embedding],
-            ids=[f'doc{document_id}_chunk{i}'],
-            metadatas=[{"document_id": document_id}]
-        )
-        time.sleep(1)
+    try:
+        for i, chunk in enumerate(chunks):
+            result = client.models.embed_content(model='gemini-embedding-001', contents=chunk)
+            embedding = result.embeddings[0].values
+            
+            collection.add(
+                documents=[chunk],
+                embeddings=[embedding],
+                ids=[f'doc{document_id}_chunk{i}'],
+                metadatas=[{"document_id": document_id}]
+            )
+            time.sleep(1)
+    except Exception:
+        return -1
     
     return len(chunks)
 
@@ -56,12 +59,18 @@ def answer_question(question, document_id):
     
     context = '\n\n'.join(results['documents'][0])
 
-    ans = check_groundedness(question, results['documents'][0])
+    try:
+        ans = check_groundedness(question, results['documents'][0])
+    except Exception:
+        return "Unable to process your question right now — please try again in a moment."
     
     if ans == True:
         prompt = f'Answer the question using ONLY this context. Say which part you used.\n\nContext:\n{context}\n\nQuestion: {question}'
-        response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
-        return response.text
+        try:
+            response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
+            return response.text
+        except Exception:
+            return "Unable to process your question right now — please try again in a moment."
     else:
         return "This document does not contain enough information to answer this question."
     
