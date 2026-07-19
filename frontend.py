@@ -43,7 +43,7 @@ uploaded_file = st.file_uploader('Choose a PDF', type='pdf')
 if uploaded_file:
     if 'uploaded_filename' not in st.session_state or st.session_state.uploaded_filename != uploaded_file.name:
         st.session_state.messages = []
-        response = requests.post('http://backend:8000/upload', files={'file': uploaded_file})
+        response = requests.post('https://rag-backend-e3lz.onrender.com/upload', files={'file': uploaded_file})
         result = response.json()
         st.session_state.uploaded_filename = uploaded_file.name
         st.session_state.document_id = result['document_id']
@@ -55,7 +55,7 @@ if question := st.chat_input('Ask about your document'):
         st.write(question)
     
     with st.spinner('Thinking...'):
-        response = requests.post('http://backend:8000/query', params={'question': question, 'document_id': st.session_state.document_id})
+        response = requests.post('https://rag-backend-e3lz.onrender.com/query', params={'question': question, 'document_id': st.session_state.document_id})
         answer = response.json()['answer']
     
     st.session_state.messages.append({'role': 'assistant', 'content': answer})
