@@ -4,7 +4,7 @@ A retrieval-augmented generation system that lets users upload any PDF and ask q
 
 Built from scratch in Python — no LangChain in the core pipeline — to develop a complete understanding of how RAG systems work internally, from chunking and embeddings through retrieval, verification, and generation.
 
-**Live demo:** https://rag-frontend-xxxx.onrender.com
+**Live demo:** https://rag-frontend-12gx.onrender.com
 *(Free tier — first load after inactivity may take 30-60 seconds to wake up)*
 
 **Backend API docs:** https://rag-backend-e3lz.onrender.com/docs
@@ -139,4 +139,4 @@ rag-project/
 ## Author
 
 **Asmad Nadeem** · BSCS @ FAST-NUCES CFD
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://linkedin.com/in/YOUR-HANDLE)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://linkedin.com/in/asmadnadeem)
